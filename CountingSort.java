@@ -33,6 +33,7 @@ public class CountingSort {
         }
         System.out.println();
 
+
         test = new int[0];
         for (int i = 0; i < test.length; i++) {
             System.out.print(test[i] + " ");
@@ -46,6 +47,7 @@ public class CountingSort {
         }
         System.out.println();
 
+
         test = new int[] {0, 0, 0, 0, 0, 10, 0, 0, 0, 0};
         for (int i = 0; i < test.length; i++) {
             System.out.print(test[i] + " ");
@@ -58,6 +60,7 @@ public class CountingSort {
             System.out.print(i + " ");
         }
         System.out.println();
+
 
         test = new int[] {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
         for (int i = 0; i < test.length; i++) {
