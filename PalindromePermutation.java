@@ -1,6 +1,10 @@
 import java.util.Map;
 import java.util.HashMap;
 
+/*
+ * Check to see if a string can be permutated in such a way that it
+ * makes a palindrome.
+ */
 public class PalindromePermutation {
     public static boolean palPerm(String str) {
         str.toLowerCase();
