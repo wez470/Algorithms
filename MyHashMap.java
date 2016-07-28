@@ -16,7 +16,7 @@ public class MyHashMap<K, V> {
         if (key == null) {
             return null;
         }
-        int index = key.hashCode() & (table.length - 1);
+        int index = indexOf(key, table.length);
 
         if (table[index] == null) {
             table[index] = new LinkedList<Entry<K, V>>();
@@ -46,6 +46,21 @@ public class MyHashMap<K, V> {
         return value;
     }
 
+    private int indexOf(K key, int capacity) {
+        return hash(key.hashCode()) & (capacity - 1);
+    }
+
+    /*
+     * This function was copied from the java.util.HashMap implementation
+     */
+    private int hash(int h) {
+        // This function ensures that hashCodes that differ only by
+        // constant multiples at each bit position have a bounded
+        // number of collisions (approximately 8 at default load factor).
+        h ^= (h >>> 20) ^ (h >>> 12);
+        return h ^ (h >>> 7) ^ (h >>> 4);
+    }
+
     private void resizeTable(int newCapacity) {
         if (table.length == MAX_CAPACITY) {
             return;
@@ -58,7 +73,7 @@ public class MyHashMap<K, V> {
                 @SuppressWarnings("unchecked")
                 LinkedList<Entry<K, V>> entries = (LinkedList<Entry<K, V>>) table[i];
                 for (Entry<K, V> entry : entries) {
-                    int newIndex = entry.getKey().hashCode() & (newCapacity - 1);
+                    int newIndex = indexOf(entry.getKey(), newCapacity);
                     
                     if (newTable[newIndex] == null) {
                         newTable[newIndex] = new LinkedList<Entry<K, V>>();
@@ -77,7 +92,7 @@ public class MyHashMap<K, V> {
     }
 
     public V get(K key) {
-        int index = key.hashCode() & (table.length - 1);
+        int index = indexOf(key, table.length);
         
         // We know the array will only contain a LinkedList of Entry
         @SuppressWarnings("unchecked")
