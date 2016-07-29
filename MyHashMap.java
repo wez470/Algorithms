@@ -1,4 +1,4 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class MyHashMap<K, V> {
     public static final float LOAD_FACTOR = 0.75f;
@@ -19,12 +19,12 @@ public class MyHashMap<K, V> {
         int index = indexOf(key, table.length);
 
         if (table[index] == null) {
-            table[index] = new LinkedList<Entry<K, V>>();
+            table[index] = new ArrayList<Entry<K, V>>();
         }
         
-        // We know the array will only contain a LinkedList of Entry
+        // We know the array will only contain a ArrayList of Entry
         @SuppressWarnings("unchecked")
-        LinkedList<Entry<K, V>> entries = (LinkedList<Entry<K, V>>) table[index];
+        ArrayList<Entry<K, V>> entries = (ArrayList<Entry<K, V>>) table[index];
 
         boolean keyExists = false;
         for (Entry<K, V> entry : entries) {
@@ -69,18 +69,18 @@ public class MyHashMap<K, V> {
 
         for (int i = 0; i < table.length; i++) {
             if (table[i] != null) {
-                // We know the array will only contain a LinkedList of Entry
+                // We know the array will only contain a ArrayList of Entry
                 @SuppressWarnings("unchecked")
-                LinkedList<Entry<K, V>> entries = (LinkedList<Entry<K, V>>) table[i];
+                ArrayList<Entry<K, V>> entries = (ArrayList<Entry<K, V>>) table[i];
                 for (Entry<K, V> entry : entries) {
                     int newIndex = indexOf(entry.getKey(), newCapacity);
                     
                     if (newTable[newIndex] == null) {
-                        newTable[newIndex] = new LinkedList<Entry<K, V>>();
+                        newTable[newIndex] = new ArrayList<Entry<K, V>>();
                     }
-                    // We know the array will only contain a LinkedList of Entry
+                    // We know the array will only contain a ArrayList of Entry
                     @SuppressWarnings("unchecked")
-                    LinkedList<Entry<K, V>> newEntries = (LinkedList<Entry<K, V>>) newTable[newIndex];
+                    ArrayList<Entry<K, V>> newEntries = (ArrayList<Entry<K, V>>) newTable[newIndex];
                     newEntries.add(entry);
                 }
                 entries.clear();
@@ -94,9 +94,9 @@ public class MyHashMap<K, V> {
     public V get(K key) {
         int index = indexOf(key, table.length);
         
-        // We know the array will only contain a LinkedList of Entry
+        // We know the array will only contain a ArrayList of Entry
         @SuppressWarnings("unchecked")
-        LinkedList<Entry<K, V>> entries = (LinkedList<Entry<K, V>>) table[index];
+        ArrayList<Entry<K, V>> entries = (ArrayList<Entry<K, V>>) table[index];
         
         V value = null;
         if (entries != null) {
