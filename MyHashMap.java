@@ -3,7 +3,7 @@ import java.util.LinkedList;
 public class MyHashMap<K, V> {
     public static final float LOAD_FACTOR = 0.75f;
     public static final int INIT_CAPACITY = 16;
-    public static final int MAX_CAPACITY = Integer.MAX_VALUE;
+    public static final int MAX_CAPACITY = 1 << 30;
 
     private int size = 0;
     private Object[] table;
