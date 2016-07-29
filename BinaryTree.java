@@ -44,6 +44,36 @@ public class BinaryTree {
         return false;
     }
 
+    public void inOrderWalk() {
+        if (left != null) {
+            left.inOrderWalk();
+        }
+        System.out.print(value + " ");
+        if (right != null) {
+            right.inOrderWalk();
+        }
+    }
+
+    public void preOrderWalk() {
+        System.out.print(value + " ");
+        if (left != null) {
+            left.preOrderWalk();
+        }
+        if (right != null) {
+            right.preOrderWalk();
+        }
+    }
+
+    public void postOrderWalk() {
+        if (left != null) {
+            left.postOrderWalk();
+        }
+        if (right != null) {
+            right.postOrderWalk();
+        }
+        System.out.print(value + " ");
+    }
+
     public static void main(String[] args) {
         BinaryTree b = new BinaryTree(4);
         b.add(2);
@@ -51,5 +81,11 @@ public class BinaryTree {
         b.add(9);
         System.out.println(b);
         System.out.println(b.isValid());
+        b.preOrderWalk();
+        System.out.println();
+        b.inOrderWalk();
+        System.out.println();
+        b.postOrderWalk();
+        System.out.println();
     }
 }
