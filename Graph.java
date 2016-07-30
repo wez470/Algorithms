@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.lang.IllegalArgumentException;
+import java.util.PriorityQueue;
 
 /*
  * Graph class that can do dijkstras.
@@ -32,47 +33,52 @@ public class Graph {
             throw new IllegalArgumentException("src or dest id does not exist");
         }
 
-        Set<Integer> visited = new HashSet<>();
+        Set<Node> visited = new HashSet<>();
         Map<Integer, Integer> idToIndex = new HashMap<>();
         Map<Integer, Integer> indexToId = new HashMap<>();
+        Map<Integer, QueueNode> indexToQNode = new HashMap<>();
         int index = 0;
         for (Integer id : nodes.keySet()) {
             idToIndex.put(id, index);
             indexToId.put(index, id);
             index++;
         }
-        double[] dists = new double[nodes.size()];
-        for (int i = 0; i < dists.length; i++) {
-            dists[i] = Double.POSITIVE_INFINITY;
-        }
-        dists[idToIndex.get(srcId)] = 0;
+
+        PriorityQueue<QueueNode> q = new PriorityQueue<>();
+        QueueNode qNode = new QueueNode(0, nodes.get(srcId));
+        q.add(qNode);
+        indexToQNode.put(idToIndex.get(srcId), qNode);
         
-        while (visited.size() < nodes.size()) {
-            // Get lowest distance node
-            double min = Double.POSITIVE_INFINITY;
-            int minIndex = -1;
-            for (int i = 0; i < dists.length; i++) {
-                if (!visited.contains(i)) {
-                    if (dists[i] < min) {
-                        min = dists[i];
-                        minIndex = i;
-                    }
-                }
-            }
-            Node currNode = nodes.get(indexToId.get(minIndex));
+        while (!q.isEmpty()) {
+            QueueNode currQNode = q.poll();
+            Node currNode = currQNode.getNode();
+            int currDist = currQNode.getDist();
 
             for (Edge edge : currNode.getEdges()) {
                 Node neighbour = edge.getNeighbour();
-                int neighbourIndex = idToIndex.get(neighbour.getId());
-                if (dists[minIndex] + edge.getWeight() < dists[neighbourIndex]) {
-                    dists[neighbourIndex] = dists[minIndex] + edge.getWeight();
+                if (!visited.contains(neighbour)) {
+                    int neighbourIndex = idToIndex.get(neighbour.getId());
+                    if (indexToQNode.containsKey(neighbourIndex)) {
+                        if (currDist + edge.getWeight() < indexToQNode.get(neighbourIndex).getDist()) {
+                            QueueNode neighbourQNode = indexToQNode.get(neighbourIndex);
+                            q.remove(neighbourQNode);
+                            QueueNode newQNode = new QueueNode(currDist + edge.getWeight(), neighbour);
+                            indexToQNode.put(neighbourIndex, newQNode);
+                            q.add(newQNode);
+                        }
+                    }
+                    else {
+                        QueueNode newQNode = new QueueNode(currDist + edge.getWeight(), neighbour);
+                        indexToQNode.put(neighbourIndex, newQNode);
+                        q.add(newQNode);
+                    }
                 }
             }
 
-            visited.add(minIndex);
+            visited.add(currNode);
         }
 
-        return dists[idToIndex.get(destId)];
+        return indexToQNode.get(idToIndex.get(destId)).getDist();
     }
 
     public static void main(String[] args) {
@@ -152,6 +158,29 @@ public class Graph {
 
         public Node getNeighbour() {
             return otherNode;
+        }
+    }
+
+    private class QueueNode implements Comparable<QueueNode> {
+        private int dist;
+        private Node node;
+
+        public QueueNode(int dist, Node node) {
+            this.dist = dist;
+            this.node = node;
+        }
+
+        public Node getNode() {
+            return node;
+        }
+
+        public int getDist() {
+            return dist;
+        }
+
+        @Override
+        public int compareTo(QueueNode other) {
+            return Integer.compare(dist, other.getDist());
         }
     }
 }
