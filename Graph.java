@@ -9,7 +9,6 @@ import java.lang.IllegalArgumentException;
 
 /*
  * Graph class that can do dijkstras.
- * Needs cleaning up.
  */
 public class Graph {
     private Map<Integer, Node> nodes = new HashMap<>();
@@ -33,7 +32,7 @@ public class Graph {
             throw new IllegalArgumentException("src or dest id does not exist");
         }
 
-        Set<Node> visited = new HashSet<>();
+        Set<Integer> visited = new HashSet<>();
         Map<Integer, Integer> idToIndex = new HashMap<>();
         Map<Integer, Integer> indexToId = new HashMap<>();
         int index = 0;
@@ -53,7 +52,7 @@ public class Graph {
             double min = Double.POSITIVE_INFINITY;
             int minIndex = -1;
             for (int i = 0; i < dists.length; i++) {
-                if (!visited.contains(nodes.get(indexToId.get(i)))) {
+                if (!visited.contains(i)) {
                     if (dists[i] < min) {
                         min = dists[i];
                         minIndex = i;
@@ -70,7 +69,7 @@ public class Graph {
                 }
             }
 
-            visited.add(currNode);
+            visited.add(minIndex);
         }
 
         return dists[idToIndex.get(destId)];
