@@ -52,7 +52,7 @@ public class Graph {
         while (!q.isEmpty()) {
             QueueNode currQNode = q.poll();
             Node currNode = currQNode.getNode();
-            int currDist = currQNode.getDist();
+            double currDist = currQNode.getDist();
 
             for (Edge edge : currNode.getEdges()) {
                 Node neighbour = edge.getNeighbour();
@@ -79,6 +79,65 @@ public class Graph {
         }
 
         return indexToQNode.get(idToIndex.get(destId)).getDist();
+    }
+
+    public double aStar(int srcId, int destId) {
+        if (nodes.get(srcId) == null || nodes.get(destId) == null) {
+            throw new IllegalArgumentException("src or dest id does not exist");
+        }
+
+        Set<Node> visited = new HashSet<>();
+        Map<Integer, Integer> idToIndex = new HashMap<>();
+        Map<Integer, Integer> indexToId = new HashMap<>();
+        Map<Integer, AStarQueueNode> indexToQNode = new HashMap<>();
+        int index = 0;
+        for (Integer id : nodes.keySet()) {
+            idToIndex.put(id, index);
+            indexToId.put(index, id);
+            index++;
+        }
+
+        PriorityQueue<AStarQueueNode> q = new PriorityQueue<>();
+        AStarQueueNode qNode = new AStarQueueNode(0, 0, nodes.get(srcId));
+        q.add(qNode);
+        indexToQNode.put(idToIndex.get(srcId), qNode);
+        Node destNode = nodes.get(destId);
+
+        while (!q.isEmpty()) {
+            AStarQueueNode currQNode = q.poll();
+            Node currNode = currQNode.getNode();
+            double currDist = currQNode.getDist();
+
+            for (Edge edge : currNode.getEdges()) {
+                Node neighbour = edge.getNeighbour();
+                if (!visited.contains(neighbour)) {
+                    int neighbourIndex = idToIndex.get(neighbour.getId());
+                    if (indexToQNode.containsKey(neighbourIndex)) {
+                        if (currDist + edge.getWeight() < indexToQNode.get(neighbourIndex).getDist()) {
+                            AStarQueueNode neighbourQNode = indexToQNode.get(neighbourIndex);
+                            q.remove(neighbourQNode);
+                            AStarQueueNode newQNode = new AStarQueueNode(currDist + edge.getWeight(), getDist(neighbour, destNode), neighbour);
+                            indexToQNode.put(neighbourIndex, newQNode);
+                            q.add(newQNode);
+                        }
+                    }
+                    else {
+                        AStarQueueNode newQNode = new AStarQueueNode(currDist + edge.getWeight(), getDist(neighbour, destNode), neighbour);
+                        indexToQNode.put(neighbourIndex, newQNode);
+                        q.add(newQNode);
+                    }
+                }
+            }
+
+            visited.add(currNode);
+        }
+
+        return indexToQNode.get(idToIndex.get(destId)).getDist();
+    }
+
+    private double getDist(Node n1, Node n2) {
+        return Math.sqrt((n2.getX() - n1.getX()) * (n2.getX() - n1.getX())
+                + (n2.getY() - n1.getY()) * (n2.getY() - n1.getY()));
     }
 
     public static void main(String[] args) {
@@ -108,6 +167,10 @@ public class Graph {
         System.out.println(g.dijkstras(0, 4)); // 7
         System.out.println(g.dijkstras(15, 0)); // 4
         System.out.println(g.dijkstras(0, 2)); // 4
+        System.out.println(g.aStar(0, 4)); // 7
+        System.out.println(g.aStar(15, 0)); // 4
+        System.out.println(g.aStar(0, 2)); // 4
+
     }
     
     private class Node {
@@ -162,10 +225,10 @@ public class Graph {
     }
 
     private class QueueNode implements Comparable<QueueNode> {
-        private int dist;
+        private double dist;
         private Node node;
 
-        public QueueNode(int dist, Node node) {
+        public QueueNode(double dist, Node node) {
             this.dist = dist;
             this.node = node;
         }
@@ -174,13 +237,42 @@ public class Graph {
             return node;
         }
 
-        public int getDist() {
+        public double getDist() {
             return dist;
         }
 
         @Override
         public int compareTo(QueueNode other) {
-            return Integer.compare(dist, other.getDist());
+            return Double.compare(dist, other.getDist());
+        }
+    }
+
+    private class AStarQueueNode implements Comparable<AStarQueueNode> {
+        private double dist;
+        private double heuristicDist;
+        private Node node;
+
+        public AStarQueueNode(double dist, double heuristicDist, Node node) {
+            this.dist = dist;
+            this.heuristicDist = heuristicDist;
+            this.node = node;
+        }
+
+        public Node getNode() {
+            return node;
+        }
+
+        public double getDist() {
+            return dist;
+        }
+
+        public double getHeuristicDist() {
+            return heuristicDist;
+        }
+
+        @Override
+        public int compareTo(AStarQueueNode other) {
+            return Double.compare(dist + heuristicDist, other.getDist() + other.getHeuristicDist());
         }
     }
 }
