@@ -40,9 +40,6 @@ public class BinaryTree2 {
     }
 
     public boolean isValid() {
-        if (root == null) {
-            return true;
-        }
         return isValidHelper(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
@@ -50,14 +47,9 @@ public class BinaryTree2 {
         if (curr == null) {
             return true;
         }
-
-        if (curr.getValue() > min && curr.getValue() <= max) {
-            return isValidHelper(curr.getLeft(), min, curr.getValue()) &&
-                    isValidHelper(curr.getRight(), curr.getValue(), max);
-        }
-        else {
-            return false;
-        }
+        return curr.getValue() > min && curr.getValue() <= max &&
+                isValidHelper(curr.getLeft(), min, curr.getValue()) &&
+                isValidHelper(curr.getRight(), curr.getValue(), max);
     }
 
     // inorder traversal
